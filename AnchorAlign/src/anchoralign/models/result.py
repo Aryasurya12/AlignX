@@ -19,3 +19,4 @@ class FinalResult:
     warnings: List[str] = field(default_factory=list)
     timings: Dict[str, float] = field(default_factory=dict)
     configuration: Optional[AnchorAlignConfig] = None
+    final_alignment: Optional[AlignmentResult] = None

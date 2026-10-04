@@ -44,3 +44,6 @@ Later phases will implement:
 - mutation detection
 - benchmarking
 - visualization
+
+## Phase 3 — Reconstruction & Mutation Engine
+Implemented alignment reconstruction, mutation scanning, and compound clustering.

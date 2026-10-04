@@ -4,7 +4,7 @@ from ..anchors.interfaces import find_anchors
 from ..gaps.interfaces import extract_gaps
 from ..alignment.interfaces import align_gap
 from ..reconstruction.interfaces import reconstruct_alignment
-from ..mutations.interfaces import detect_mutations
+from ..mutations.interfaces import detect_mutations, get_compound_events
 from ..models.result import FinalResult
 
 def run_pipeline(reference: str, query: str, config: AnchorAlignConfig = None) -> FinalResult:
@@ -28,12 +28,20 @@ def run_pipeline(reference: str, query: str, config: AnchorAlignConfig = None) -
         aligned_gaps.append(aligned_result)
     
     # 5. Reconstruction
-    final_alignment = reconstruct_alignment(anchors, aligned_gaps)
+    final_alignment = reconstruct_alignment(ref_norm, query_norm, anchors, aligned_gaps)
     
     # 6. Mutation Engine
     mutations = detect_mutations(final_alignment)
     
-    # 7. Final Result Construction
+    # 7. Compound Clustering
+    compound_events = get_compound_events(mutations, config)
+    
+    # Check boundary warnings
+    warnings = []
+    if final_alignment.boundary_touched:
+        warnings.append("Banded DP boundary_touched=True. The optimal alignment might have drifted outside the band.")
+    
+    # 8. Final Result Construction
     return FinalResult(
         reference_length=len(ref_norm),
         query_length=len(query_norm),
@@ -41,5 +49,8 @@ def run_pipeline(reference: str, query: str, config: AnchorAlignConfig = None) -
         gaps=gaps,
         alignments=aligned_gaps,
         mutations=mutations,
-        configuration=config
+        compound_events=compound_events,
+        warnings=warnings,
+        configuration=config,
+        final_alignment=final_alignment
     )

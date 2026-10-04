@@ -1,8 +1,14 @@
 # Correctness
 
-## Banded DP Limitations
-Banded Dynamic Programming reduces the O(rq) search space to a diagonal band of width `b`. It provides the exact same optimal alignment score as Full DP **only if** the optimal alignment path lies entirely within the computed band. 
+## Reconstruction Invariants
+- `len(aligned_reference) == len(aligned_query)`
+- Removing gap characters from `aligned_reference` strictly reproduces the original `reference`.
+- Removing gap characters from `aligned_query` strictly reproduces the original `query`.
+- Anchor sequences appear exactly in the reconstructed alignment without duplication or omission.
 
-When structural variations like long insertions or deletions push the necessary traceback path outside of `|i - j| <= band_width`, Banded DP will either fail to find a valid alignment or will return a sub-optimal alignment bounded by the band limits. 
+## Mutation Validation
+Mutation coordinates are tracked simultaneously with alignment columns. 
+A warning (`boundary_touched`) is propagated if Banded DP reaches its evaluation edge, as it may indicate an optimal path outside the band.
 
-The implementation flags `boundary_touched = True` when the optimal path reaches the edges of the allowed band, indicating that expanding the band might yield a better score.
+## Banded-DP Warning Propagation
+Phase 3 perfectly propagates the `boundary_touched` flag as a warning in the `FinalResult`. The alignment is presented as-is without false claims of global optimality in such cases.

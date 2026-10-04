@@ -1,17 +1,11 @@
 from typing import List
 from ..models.anchor import Anchor
-from ..models.gap import Gap
 from ..models.alignment import AlignmentResult
+from .reconstruct import reconstruct_alignment_engine
 
-def reconstruct_alignment(anchors: List[Anchor], aligned_gaps: List[AlignmentResult]) -> AlignmentResult:
+def reconstruct_alignment(reference: str, query: str, anchors: List[Anchor], aligned_gaps: List[AlignmentResult]) -> AlignmentResult:
     """
-    Phase 0 Placeholder for alignment reconstruction.
+    Phase 3 Alignment reconstruction.
+    Stitches ordered anchors and aligned gaps into a complete global alignment.
     """
-    return AlignmentResult(
-        aligned_reference="",
-        aligned_query="",
-        score=0.0,
-        strategy="reconstruction_placeholder",
-        band_width=0,
-        boundary_touched=False
-    )
+    return reconstruct_alignment_engine(reference, query, anchors, aligned_gaps)
