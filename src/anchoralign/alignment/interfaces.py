@@ -17,7 +17,12 @@ def align_gap(gap: Gap, reference: str, query: str, config: AnchorAlignConfig) -
     gap.selected_strategy = strategy
     
     if strategy == "banded_dp":
-        return banded_dp_align(ref_slice, query_slice, config, params["band_width"])
+        res = banded_dp_align(ref_slice, query_slice, config, params["band_width"])
+        if len(res.aligned_reference) == 0 and (len(ref_slice) > 0 or len(query_slice) > 0):
+            # Fallback if banded fails to reach the end
+            res = full_dp_align(ref_slice, query_slice, config)
+            res.boundary_touched = True
+        return res
     else:
         return full_dp_align(ref_slice, query_slice, config)
     

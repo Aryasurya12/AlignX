@@ -75,6 +75,8 @@ def reconstruct_alignment_engine(reference: str, query: str, anchors: List[Ancho
                 raise ValueError("Anchor reference and query sequences do not match.")
             final_ref.append(anchor_ref)
             final_query.append(anchor_query)
+            # Default match score is 2 in AnchorAlignConfig
+            total_score += len(anchor_ref) * 2
             curr_ref = anchor.reference_end
             curr_query = anchor.query_end
             
