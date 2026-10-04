@@ -1,0 +1,5 @@
+case_id,sequence_length,reference_length,query_length,target_similarity,actual_similarity,anchor_count,anchor_bases,anchor_coverage,gap_count,gap_bases,banded_gap_count,full_dp_gap_count,adaptive_runtime,baseline_runtime,adaptive_memory,baseline_memory,adaptive_score,baseline_score,mutation_count_adaptive,mutation_count_baseline,mutation_correct,boundary_warning_count,clustering_k,band_width,l_min,speedup,adaptive_work_proxy,baseline_work_proxy
+len_500,500,500,504,0.95,0.95,15,433,0.866,15,67,10,5,0.08169679995626211,0.20725219999440014,0.0,0.0,929.0,929,25,25,True,0,3,100,10,2.536845997705619,12512,252000
+len_1000,1000,1000,1002,0.95,0.95,26,867,0.867,27,133,23,4,0.35983959992881864,0.8914638999849558,0.0,0.0,1855.0,1855,47,47,True,0,3,100,10,2.477392427518539,24747,1002000
+len_2000,2000,2000,2002,0.95,0.95,58,1697,0.8485,57,303,47,10,1.2934089999180287,3.751902100048028,0.0,0.0,3702.0,3702,93,93,True,0,3,100,10,2.900785521274252,59800,4004000
+len_5000,5000,5000,5028,0.95,0.95,136,4122,0.8244,136,878,109,27,8.058235100004822,24.68339450005442,0.0,0.0,9290.0,9290,240,240,True,0,3,100,10,3.0631266268267163,160696,25140000
