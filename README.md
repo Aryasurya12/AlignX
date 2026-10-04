@@ -8,7 +8,7 @@ Traditional sequence alignment algorithms like Full Dynamic Programming (DP) are
 ## Core Idea
 Identify long exact matching regions called ANCHORS and perform expensive dynamic-programming alignment only inside the remaining GAPS.
 
-## Planned Architecture
+## Architecture
 Reference + Query
         ↓
 Preprocessing
@@ -17,33 +17,29 @@ Anchor Engine
         ↓
 Ordered Anchors
         ↓
-Gap Engine
+Gap Extraction
         ↓
-Adaptive Alignment
+Gap Classification
         ↓
-Reconstruction
+Adaptive Selector
         ↓
-Mutation Engine
+Banded DP / Full DP
         ↓
-Evaluation
+Alignment Reconstruction
         ↓
-Visualization
+Mutation Detection
+        ↓
+Compound Clustering
+        ↓
+FinalResult
 
 ## Technology Stack
 - Python 3.11+
 - pytest
 
 ## Current Development Status
-**Phase 1 — Anchor Engine**
-This phase implements exact string matching with KMP and Rabin-Karp, generates candidate anchors, and applies merging and deterministic conflict resolution to produce valid anchor chains.
-
-Later phases will implement:
-- gap analysis
-- Banded DP
-- Full DP
-- mutation detection
-- benchmarking
-- visualization
-
-## Phase 3 — Reconstruction & Mutation Engine
-Implemented alignment reconstruction, mutation scanning, and compound clustering.
+- Phase 0 ✅
+- Phase 1 ✅
+- Phase 2 ✅
+- Phase 3 ✅
+- Phase 4 🚧 / in progress
