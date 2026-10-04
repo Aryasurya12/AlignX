@@ -1,2 +1,49 @@
-# AlignX
-A cost-aware DNA sequence comparison and mutation classification pipeline that first finds long exact matches, then analyzes only the unmatched regions using the cheapest suitable alignment algorithm.
+# AnchorAlign
+
+Adaptive Anchor-Guided DNA Sequence Alignment
+
+## Problem Statement
+Traditional sequence alignment algorithms like Full Dynamic Programming (DP) are computationally expensive and do not scale well for long DNA sequences with high similarity.
+
+## Core Idea
+Identify long exact matching regions called ANCHORS and perform expensive dynamic-programming alignment only inside the remaining GAPS.
+
+## Planned Architecture
+Reference + Query
+        ↓
+Preprocessing
+        ↓
+Anchor Engine
+        ↓
+Ordered Anchors
+        ↓
+Gap Engine
+        ↓
+Adaptive Alignment
+        ↓
+Reconstruction
+        ↓
+Mutation Engine
+        ↓
+Evaluation
+        ↓
+Visualization
+
+## Technology Stack
+- Python 3.11+
+- pytest
+
+## Current Development Status
+**Phase 1 — Anchor Engine**
+This phase implements exact string matching with KMP and Rabin-Karp, generates candidate anchors, and applies merging and deterministic conflict resolution to produce valid anchor chains.
+
+Later phases will implement:
+- gap analysis
+- Banded DP
+- Full DP
+- mutation detection
+- benchmarking
+- visualization
+
+## Phase 3 — Reconstruction & Mutation Engine
+Implemented alignment reconstruction, mutation scanning, and compound clustering.
