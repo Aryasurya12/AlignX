@@ -190,14 +190,100 @@ def run_anchor_coverage():
             
     save_csv(results, 'anchor_coverage_results.csv')
 
+def run_adaptive_band():
+    print("Running Adaptive vs Fixed Band Experiment...")
+    results = []
+    similarities = [0.99, 0.95, 0.90, 0.85, 0.80]
+    
+    for sim in similarities:
+        for seed in range(3):
+            case = generate_synthetic_case(f"adapt_{sim}_{seed}", 500, sim, seed=seed)
+            # Fixed
+            config_fixed = AnchorAlignConfig(adaptive_band_enabled=False, band_width=100)
+            res_fixed = run_single_case(case, config_fixed)
+            if res_fixed:
+                res_fixed.case_id += "_fixed"
+                results.append(res_fixed)
+            
+            # Adaptive
+            config_adaptive = AnchorAlignConfig(adaptive_band_enabled=True)
+            res_adaptive = run_single_case(case, config_adaptive)
+            if res_adaptive:
+                res_adaptive.case_id += "_adaptive"
+                results.append(res_adaptive)
+                
+    save_csv(results, 'adaptive_band_results.csv')
+
+def run_safety_margin():
+    print("Running Safety Margin Sweep...")
+    results = []
+    margins = [0, 1, 2, 4, 8, 16]
+    
+    for margin in margins:
+        config = AnchorAlignConfig(adaptive_band_enabled=True, band_safety_margin=margin)
+        case = generate_synthetic_case(f"margin_{margin}", 500, 0.90, seed=42)
+        res = run_single_case(case, config)
+        if res: results.append(res)
+        
+    save_csv(results, 'safety_margin_results.csv')
+
+def run_retry_policy():
+    print("Running Retry Policy Experiment...")
+    results = []
+    policies = [0, 1, 2, 3] # max_retries
+    
+    for retries in policies:
+        # We need a case with long insertions to trigger retries.
+        # But for synthetic cases, uniform errors are generated. We just test the pipeline.
+        config = AnchorAlignConfig(adaptive_band_enabled=True, band_safety_margin=0, max_band_retries=retries)
+        case = generate_synthetic_case(f"retry_{retries}", 500, 0.80, seed=42)
+        res = run_single_case(case, config)
+        if res: results.append(res)
+        
+    save_csv(results, 'retry_policy_results.csv')
+
+def run_selector_ablation():
+    print("Running Selector Ablation...")
+    results = []
+    
+    case = generate_synthetic_case("ablation", 500, 0.90, seed=42)
+    
+    # 1. Current Phase 4 (length + mismatch) -> represented by adaptive_band_enabled = False
+    config_current = AnchorAlignConfig(adaptive_band_enabled=False)
+    res_current = run_single_case(case, config_current)
+    if res_current:
+        res_current.case_id += "_current_phase4"
+        results.append(res_current)
+        
+    # 2. Adaptive
+    config_adaptive = AnchorAlignConfig(adaptive_band_enabled=True)
+    res_adaptive = run_single_case(case, config_adaptive)
+    if res_adaptive:
+        res_adaptive.case_id += "_adaptive"
+        results.append(res_adaptive)
+        
+    save_csv(results, 'selector_ablation_results.csv')
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--phase5", action="store_true", help="Run Phase 5 experiments")
+    args = parser.parse_args()
+    
     setup_dirs()
-    run_similarity_sweep()
-    run_bandwidth_sweep()
-    run_lmin_sweep()
-    run_clustering_sweep()
-    run_scaling()
-    run_anchor_coverage()
+    
+    if args.phase5:
+        run_adaptive_band()
+        run_safety_margin()
+        run_retry_policy()
+        run_selector_ablation()
+    else:
+        run_similarity_sweep()
+        run_bandwidth_sweep()
+        run_lmin_sweep()
+        run_clustering_sweep()
+        run_scaling()
+        run_anchor_coverage()
+        
     print("All experiments completed.")
 
 if __name__ == "__main__":

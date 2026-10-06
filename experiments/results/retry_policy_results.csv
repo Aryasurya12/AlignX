@@ -1,0 +1,5 @@
+case_id,sequence_length,reference_length,query_length,target_similarity,actual_similarity,anchor_count,anchor_bases,anchor_coverage,gap_count,gap_bases,banded_gap_count,full_dp_gap_count,adaptive_runtime,baseline_runtime,adaptive_memory,baseline_memory,adaptive_score,baseline_score,mutation_count_adaptive,mutation_count_baseline,mutation_correct,boundary_warning_count,clustering_k,band_width,l_min,speedup,adaptive_work_proxy,baseline_work_proxy
+retry_0,500,500,503,0.8,0.802,14,177,0.354,15,323,0,15,0.23815870005637407,0.30596090003382415,0.0,0.0,712.0,712,87,87,True,0,3,100,10,1.2846933576703297,15088,251500
+retry_1,500,500,503,0.8,0.802,14,177,0.354,15,323,7,8,0.27418259996920824,0.5527630000142381,0.0,0.0,712.0,712,87,87,True,0,3,100,10,2.0160396760272734,37791,251500
+retry_2,500,500,503,0.8,0.802,14,177,0.354,15,323,8,7,0.4911595999728888,0.8402286999626085,0.0,0.0,712.0,712,87,87,True,0,3,100,10,1.7107040155765818,44485,251500
+retry_3,500,500,503,0.8,0.802,14,177,0.354,15,323,8,7,0.3309749000472948,1.4874694000463933,0.0,0.0,712.0,712,87,87,True,0,3,100,10,4.494206055606757,44485,251500
