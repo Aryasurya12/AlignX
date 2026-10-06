@@ -14,8 +14,11 @@
 - **Space:** `O(r * q)` for the full matrix.
 
 ## Banded DP
-- **Time:** Approximately `O(g * b)` where `g` is the max gap length and `b` is the `band_width`.
+- **Fixed-Band Strategy:** Uses a rigid boundary `b` for all gaps.
+- **Adaptive-Band Strategy:** Calculates the exact necessary boundary for each gap independently `b = length_difference + safety_margin + drift`. 
+- **Time:** Approximately `O(g * b)` where `g` is the max gap length and `b` is the dynamically estimated or statically provided `band_width`.
 - **Space:** `O(g * q)` currently, though could be optimized to `O(q * b)`.
+- **Note on Adaptive Band:** Adaptive banding does not change the theoretical worst-case complexity of Full DP (`O(r * q)`). If sequences have massive indels or zero homology, the adaptive retries exhaust and fall back to Full DP. The objective of adaptive banding is to reduce the *practical* dynamic programming work matrix evaluated for gaps by fitting the bounds tightly to the required indel limits.
 
 ## Reconstruction
 - **Time:** `O(aligned_length)` as it iterates sequentially over anchors and aligned gaps to build the final string.

@@ -9,22 +9,26 @@ Anchor Engine
         ↓
 Ordered Anchors
         ↓
-Gap Engine
+Gap Extraction
         ↓
-Classification & Selector
+Gap Features
         ↓
-Banded / Full DP
+Adaptive Selector
         ↓
-Aligned Gaps
+Adaptive Band Estimation
+        ↓
+Banded DP
+        ↓
+Boundary Check
+        ↓
+Retry / Wider Band
+        ↓
+Full DP Fallback
         ↓
 Reconstruction
         ↓
-Complete Alignment
-        ↓
-Mutation Scanner
-        ↓
-Raw Mutation Events
+Mutation Detection
         ↓
 Compound Clustering
         ↓
-FinalResult
+Evaluation

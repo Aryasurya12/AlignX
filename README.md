@@ -38,8 +38,12 @@ FinalResult
 - pytest
 
 ## Current Development Status
-- Phase 0 ✅
-- Phase 1 ✅
-- Phase 2 ✅
-- Phase 3 ✅
-- Phase 4 🚧 / in progress
+- Phase 0 — Foundation       ✅
+- Phase 1 — Anchor Engine    ✅
+- Phase 2 — Adaptive Align   ✅
+- Phase 3 — Reconstruction   ✅
+- Phase 4 — Evaluation       ✅
+- Phase 5 — Optimization     🚧 / current
+
+## Research Contribution
+AnchorAlign demonstrates that dynamic programming boundaries (band widths) do not need to be static. By leveraging anchor-derived gap length disparities and mismatch ratios, AnchorAlign can adaptively scale its DP band for each independent gap. Coupled with a boundary-aware retry and Full DP fallback, this evidence-based selector approach significantly reduces unnecessary DP matrix computations without sacrificing optimality.
