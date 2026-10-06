@@ -17,14 +17,59 @@ def align_gap(gap: Gap, reference: str, query: str, config: AnchorAlignConfig) -
     gap.selected_strategy = strategy
     
     if strategy == "banded_dp":
-        res = banded_dp_align(ref_slice, query_slice, config, params["band_width"])
-        if len(res.aligned_reference) == 0 and (len(ref_slice) > 0 or len(query_slice) > 0):
-            # Fallback if banded fails to reach the end
-            res = full_dp_align(ref_slice, query_slice, config)
-            res.boundary_touched = True
+        band_width = params["band_width"]
+        is_adaptive = params.get("adaptive", False)
+        
+        metadata = {
+            "initial_band_width": band_width,
+            "final_band_width": band_width,
+            "retry_count": 0,
+            "boundary_touched": False,
+            "fallback_used": False,
+            "decision_reason": reason,
+            "gap_id": id(gap)
+        }
+        
+        res = banded_dp_align(ref_slice, query_slice, config, band_width)
+        
+        if config.adaptive_band_enabled and is_adaptive:
+            retries = 0
+            while (res.boundary_touched or (len(res.aligned_reference) == 0 and (len(ref_slice) > 0 or len(query_slice) > 0))) and retries < config.max_band_retries:
+                retries += 1
+                band_width *= config.band_growth_factor
+                res = banded_dp_align(ref_slice, query_slice, config, band_width)
+            
+            metadata["retry_count"] = retries
+            metadata["final_band_width"] = band_width
+            metadata["boundary_touched"] = res.boundary_touched
+            
+            if res.boundary_touched or (len(res.aligned_reference) == 0 and (len(ref_slice) > 0 or len(query_slice) > 0)):
+                # Fallback to Full DP
+                metadata["fallback_used"] = True
+                res = full_dp_align(ref_slice, query_slice, config)
+                res.strategy = "full_dp_fallback"
+        else:
+            if len(res.aligned_reference) == 0 and (len(ref_slice) > 0 or len(query_slice) > 0):
+                # Legacy fallback
+                metadata["fallback_used"] = True
+                res = full_dp_align(ref_slice, query_slice, config)
+                res.boundary_touched = True
+                res.strategy = "full_dp_fallback"
+                
+        res.decision_metadata = metadata
         return res
     else:
-        return full_dp_align(ref_slice, query_slice, config)
+        res = full_dp_align(ref_slice, query_slice, config)
+        res.decision_metadata = {
+            "initial_band_width": None,
+            "final_band_width": None,
+            "retry_count": 0,
+            "boundary_touched": False,
+            "fallback_used": False,
+            "decision_reason": reason,
+            "gap_id": id(gap)
+        }
+        return res
     
 def banded_align(reference_gap: str, query_gap: str, config: AnchorAlignConfig) -> AlignmentResult:
     return banded_dp_align(reference_gap, query_gap, config, config.band_width)

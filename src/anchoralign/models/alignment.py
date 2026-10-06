@@ -8,3 +8,4 @@ class AlignmentResult:
     strategy: str
     band_width: int
     boundary_touched: bool
+    decision_metadata: dict = None

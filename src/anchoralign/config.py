@@ -12,3 +12,9 @@ class AnchorAlignConfig:
     gap_penalty: int = -2
     clustering_k: int = 3
     anchor_algorithm: str = "kmp"
+    
+    # Phase 5 Adaptive Options
+    adaptive_band_enabled: bool = False
+    band_safety_margin: int = 2
+    max_band_retries: int = 2
+    band_growth_factor: int = 2
