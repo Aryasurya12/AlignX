@@ -60,14 +60,6 @@ tabs = st.tabs([
 with tabs[0]:
     st.header("Sequence Input & Configuration")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Reference Sequence")
-        ref_input = st.text_area("Input Reference DNA (FASTA or Plain Text)", height=150, key="ref_in")
-    with col2:
-        st.subheader("Query Sequence")
-        query_input = st.text_area("Input Query DNA (FASTA or Plain Text)", height=150, key="query_in")
-
     st.markdown("### Presets")
     preset = st.selectbox("Load an example dataset", ["None", "Identical Sequences", "Substitution", "Insertion", "Long Indel (Requires adaptive band)", "Complex (Anchors & Mutations)"])
     if st.button("Load Preset"):
@@ -87,6 +79,15 @@ with tabs[0]:
             st.session_state.ref_in = "ACGT" * 20 + "TGCA" * 20
             st.session_state.query_in = "ACGT" * 5 + "AAAAA" + "ACGT" * 5 + "G" + "ACGT" * 9 + "TGCA" * 20
         st.rerun()
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Reference Sequence")
+        ref_input = st.text_area("Input Reference DNA (FASTA or Plain Text)", height=150, key="ref_in")
+    with col2:
+        st.subheader("Query Sequence")
+        query_input = st.text_area("Input Query DNA (FASTA or Plain Text)", height=150, key="query_in")
+
 
     with st.expander("Alignment Configuration", expanded=False):
         c1, c2, c3 = st.columns(3)
@@ -328,12 +329,10 @@ with tabs[5]:
         if res.mutations:
             df_mut = pd.DataFrame([{
                 "Type": m.type,
-                "Ref Start": m.reference_start,
-                "Ref End": m.reference_end,
-                "Qry Start": m.query_start,
-                "Qry End": m.query_end,
-                "Ref Allele": m.reference_allele,
-                "Qry Allele": m.query_allele
+                "Ref Pos": m.reference_position,
+                "Qry Pos": m.query_position,
+                "Ref Seq": m.reference_sequence,
+                "Qry Seq": m.query_sequence
             } for m in res.mutations])
             st.dataframe(df_mut, use_container_width=True)
 
@@ -344,10 +343,9 @@ with tabs[5]:
         st.subheader("Compound Mutation Events")
         if res.compound_events:
             df_comp = pd.DataFrame([{
-                "Event Type": c.event_type,
-                "Sub-mutations": len(c.mutations),
-                "Ref Range": f"{c.reference_start}-{c.reference_end}",
-                "Qry Range": f"{c.query_start}-{c.query_end}"
+                "Event Type": "Compound" if c["mutation_count"] > 1 else "Single",
+                "Sub-mutations": c["mutation_count"],
+                "Ref Range": f"{c['start_position']}-{c['end_position']}"
             } for c in res.compound_events])
             st.dataframe(df_comp, use_container_width=True)
         else:
