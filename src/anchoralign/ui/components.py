@@ -1,5 +1,8 @@
 import streamlit as st
 import os
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 def render_card(title, description, icon=""):
     st.markdown(f"""
@@ -29,13 +32,13 @@ def validate_dna(seq):
     return seq, None
 
 def get_experiment_files():
-    results_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'experiments', 'results')
+    results_dir = PROJECT_ROOT / 'experiments' / 'results'
     if not os.path.exists(results_dir):
         return []
     return [f for f in os.listdir(results_dir) if f.endswith('.csv')]
 
 def get_plot_files():
-    plots_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'experiments', 'plots')
+    plots_dir = PROJECT_ROOT / 'experiments' / 'plots'
     if not os.path.exists(plots_dir):
         return []
     return [f for f in os.listdir(plots_dir) if f.endswith('.png')]

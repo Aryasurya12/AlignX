@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from anchoralign.ui.components import get_experiment_files, get_plot_files
+from anchoralign.ui.components import get_experiment_files, get_plot_files, PROJECT_ROOT
 
 def render():
     st.header("Benchmark Lab")
@@ -16,13 +16,13 @@ def render():
             st.warning("No experiment results found in `experiments/results/`.")
         else:
             selected_csv = st.selectbox("Select Experiment Dataset", csv_files)
-            df = pd.read_csv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'experiments', 'results', selected_csv))
+            df = pd.read_csv(PROJECT_ROOT / 'experiments' / 'results' / selected_csv)
             st.dataframe(df)
 
         if plot_files:
             st.subheader("Generated Plots")
             selected_plot = st.selectbox("Select Plot", plot_files)
-            st.image(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'experiments', 'plots', selected_plot))
+            st.image(str(PROJECT_ROOT / 'experiments' / 'plots' / selected_plot))
 
     with tab2:
         phase7_files = [f for f in get_experiment_files() if f.startswith("phase7_")]
@@ -31,7 +31,7 @@ def render():
             st.info("No Phase 7 benchmark results found.")
         else:
             selected_p7 = st.selectbox("Select Phase 7 Benchmark Dataset", phase7_files)
-            df_p7 = pd.read_csv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'experiments', 'results', selected_p7))
+            df_p7 = pd.read_csv(PROJECT_ROOT / 'experiments' / 'results' / selected_p7)
 
             st.subheader("Benchmark Metrics")
             if 'family' in df_p7.columns:

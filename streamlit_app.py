@@ -1,7 +1,7 @@
 import streamlit as st
 from anchoralign.ui.theme import apply_theme
 from anchoralign.ui.components import initialize_session
-from anchoralign.ui.pages import overview, alignment, explorer, mutations, insights, benchmarks, export
+from anchoralign.ui.pages import overview, alignment, baseline, explorer, mutations, insights, benchmarks, export
 
 st.set_page_config(page_title="AlignX", layout="wide")
 
@@ -13,6 +13,7 @@ with st.sidebar:
     selection = st.radio("Go to", [
         "Overview",
         "Sequence Alignment",
+        "Baseline Comparison",
         "Alignment Explorer",
         "Mutation Analysis",
         "Algorithm Insights",
@@ -28,6 +29,8 @@ if selection == "Overview":
     overview.render()
 elif selection == "Sequence Alignment":
     alignment.render()
+elif selection == "Baseline Comparison":
+    baseline.render()
 elif selection == "Alignment Explorer":
     explorer.render()
 elif selection == "Mutation Analysis":

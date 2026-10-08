@@ -20,6 +20,9 @@ def render():
     st.markdown("### Current Session Metrics")
     if st.session_state.pipeline_result:
         res = st.session_state.pipeline_result
+        if getattr(res, 'warnings', None):
+            for w in res.warnings:
+                st.warning(w)
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Ref Length", res.reference_length)
         c2.metric("Query Length", res.query_length)

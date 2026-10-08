@@ -7,6 +7,20 @@ def render():
         return
 
     res = st.session_state.pipeline_result
+    
+    st.subheader("Pipeline Timings")
+    timings = getattr(res, 'timings', {})
+    if timings:
+        c1, c2 = st.columns(2)
+        with c1:
+            for k, v in timings.items():
+                st.write(f"- **{k}**: {v*1000:.2f} ms")
+        with c2:
+            st.metric("Total Runtime", f"{st.session_state.runtimes.get('pipeline', 0):.4f} s")
+    else:
+        st.write("No granular timings recorded.")
+
+    st.subheader("Gap Algorithm Decisions")
     if not res.gaps:
         st.info("No gaps to inspect.")
     else:
