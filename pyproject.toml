@@ -4,13 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anchoralign"
-version = "0.1.0"
+version = "1.0.0"
 description = "Adaptive Anchor-Guided DNA Sequence Alignment"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "streamlit>=1.28.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
+    "pytest-cov>=4.0",
 ]
