@@ -1,5 +1,10 @@
 # AlignX
 
+[![CI Test Suite](https://github.com/Aryasurya12/AlignX/actions/workflows/test.yml/badge.svg)](https://github.com/Aryasurya12/AlignX/actions)
+[![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen.svg)](https://github.com/Aryasurya12/AlignX)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **Adaptive Anchor-Guided DNA Sequence Alignment**
 
 AlignX is a modular DNA sequence alignment framework that bridges the gap between fast heuristic approximations and strict mathematical guarantees. By decomposing sequences using exact matching anchors and adaptively sizing dynamic programming (DP) bounds for the remaining gaps, AlignX significantly accelerates alignment on high-homology sequences without sacrificing the mathematical optimality guaranteed by classical Needleman-Wunsch.
