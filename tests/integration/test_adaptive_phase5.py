@@ -1,10 +1,10 @@
 import pytest
-from src.anchoralign.config import AnchorAlignConfig
-from src.anchoralign.models.gap import Gap
-from src.anchoralign.gaps.gap_classifier import classify_gap
-from src.anchoralign.alignment.selector import select_strategy
-from src.anchoralign.alignment.interfaces import align_gap
-from src.anchoralign.pipeline.orchestrator import run_pipeline
+from anchoralign.config import AnchorAlignConfig
+from anchoralign.models.gap import Gap
+from anchoralign.gaps.gap_classifier import classify_gap
+from anchoralign.alignment.selector import select_strategy
+from anchoralign.alignment.interfaces import align_gap
+from anchoralign.pipeline.orchestrator import run_pipeline
 
 def test_adaptive_band_calculation_and_safety_margin():
     config = AnchorAlignConfig(adaptive_band_enabled=True, band_safety_margin=5)

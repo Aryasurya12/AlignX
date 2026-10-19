@@ -12,18 +12,32 @@ def validate_alignment(reference: str, query: str, anchors: List[Anchor], aligne
     if aligned_query.replace("-", "") != query:
         raise ValueError("Removing gaps from aligned query does not reproduce original query.")
         
-    # Check that anchors are present and not duplicated/omitted
-    curr_pos = 0
+    # Verify each anchor appears contiguously and gap-free in the final alignment.
+    # Build a map: original_ref_position -> aligned_string_index
+    ref_to_aligned = {}
+    ref_pos = 0
+    for i, ch in enumerate(aligned_ref):
+        if ch != '-':
+            ref_to_aligned[ref_pos] = i
+            ref_pos += 1
+
     for anchor in anchors:
-        anchor_seq = reference[anchor.reference_start:anchor.reference_end]
-        
-        # We need to find the anchor sequence in the aligned string.
-        # However, because of gaps, it's easier to verify that the anchor characters
-        # align perfectly without gaps in the final alignment.
-        # But a simple string search isn't enough because the anchor might be split by gaps if it wasn't an anchor,
-        # but since it IS an anchor, it must be contiguous and gapless.
-        # We actually checked this during assembly, so the assembly logic is sound.
-        pass
+        anchor_len = anchor.reference_end - anchor.reference_start
+        if anchor_len == 0:
+            continue
+
+        for pos in range(anchor.reference_start, anchor.reference_end):
+            if pos not in ref_to_aligned:
+                raise ValueError(
+                    f"Anchor at ref:{anchor.reference_start}-{anchor.reference_end} "
+                    f"position {pos} not found in alignment."
+                )
+            ai = ref_to_aligned[pos]
+            if aligned_ref[ai] != aligned_query[ai]:
+                raise ValueError(
+                    f"Anchor at ref:{anchor.reference_start}-{anchor.reference_end} "
+                    f"has mismatched bases at aligned position {ai}."
+                )
 
 def reconstruct_alignment_engine(reference: str, query: str, anchors: List[Anchor], aligned_gaps: List[AlignmentResult]) -> AlignmentResult:
     gaps = extract_gaps_engine(reference, query, anchors)
