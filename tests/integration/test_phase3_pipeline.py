@@ -38,8 +38,8 @@ def test_pipeline_compound_clustering():
     assert res.compound_events[0]["mutation_count"] == 2
     
 def test_pipeline_warning_propagation():
-    # Force a narrow band and a large shift
-    config = AnchorAlignConfig(band_width=2, L_min=50, mismatch_penalty=-5, gap_penalty=-1)
+    # Force a narrow band and a large shift without adaptive retry/fallback
+    config = AnchorAlignConfig(band_width=2, L_min=50, mismatch_penalty=-5, gap_penalty=-1, adaptive_band_enabled=False)
     # The gap extractor will give 1 gap for the whole thing.
     res = run_pipeline("AAA" + "C"*10, "C"*10 + "AAA", config)
     assert any("boundary_touched" in w for w in res.warnings)

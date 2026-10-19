@@ -14,7 +14,7 @@ class AnchorAlignConfig:
     anchor_algorithm: str = "kmp"
     
     # Phase 5 Adaptive Options
-    adaptive_band_enabled: bool = False
+    adaptive_band_enabled: bool = True
     band_safety_margin: int = 2
     max_band_retries: int = 2
     band_growth_factor: int = 2
