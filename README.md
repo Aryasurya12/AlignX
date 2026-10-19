@@ -46,6 +46,28 @@ graph TD
 - **Full DP Fallback**: If the band safety is violated repeatedly, the gap degrades safely to exact Full DP.
 - **Streamlit Research Dashboard**: A visual interface to inspect anchors, gaps, structural variant mutations, and algorithmic selector traces.
 
+## Analysis of Algorithms (AoA) Focus
+
+AlignX was engineered specifically to demonstrate foundational algorithm design paradigms applied to computational genomics:
+
+### 1. Asymptotic Complexity Comparison
+
+| Algorithm Paradigm | Time Complexity | Space Complexity | Optimality Guarantee |
+|:---|:---:|:---:|:---:|
+| **Needleman-Wunsch (Full DP)** | $\mathcal{O}(N \cdot M)$ | $\mathcal{O}(N \cdot M)$ | Strict Optimal |
+| **Global Banded DP (fixed $W$)** | $\mathcal{O}(N \cdot W)$ | $\mathcal{O}(N \cdot W)$ | Heuristic (clips indels) |
+| **AlignX (Decomposed, Homologous)** | $\mathcal{O}(N + \sum g_i W_i) \to \mathcal{O}(N)$ | $\mathcal{O}(\max(g_i W_i))$ | Strict Optimal (Fallback) |
+| **AlignX (Worst-Case Adversarial)** | $\mathcal{O}(N \cdot M)$ | $\mathcal{O}(N \cdot M)$ | Strict Optimal |
+
+### 2. Algorithmic Concepts Demonstrated
+- **Divide and Conquer**: Sequence partitioning into $K$ independent subproblems isolated by identical invariant anchors.
+- **Exact String Matching in Linear Time**:
+  - **Knuth-Morris-Pratt (KMP)**: Failure function ($\pi$-table) preprocessing in $\mathcal{O}(L_{\min})$ and linear $\mathcal{O}(N)$ scanning.
+  - **Rabin-Karp**: Rolling polynomial hash with modular arithmetic in $\mathcal{O}(N + M)$ average time.
+- **Greedy Interval Scheduling**: Strict monotonic anchor chain resolution $R_k < R_{k+1}$ and $Q_k < Q_{k+1}$ in $\mathcal{O}(K \log K)$ time.
+- **Adaptive Dynamic Programming**: Dynamic bandwidth estimation $W_i = |R_{\text{len}} - Q_{\text{len}}| + \text{margin} + \text{drift}$ with exponential expansion on boundary collision.
+- **Round-Trip Invariants**: Sequence reconstruction proofs asserting zero hallucination: $\text{strip\_gaps}(\text{aligned}) \equiv \text{original}$.
+
 ## Technology Stack
 - **Language**: Python 3.11+
 - **Testing**: `pytest`
