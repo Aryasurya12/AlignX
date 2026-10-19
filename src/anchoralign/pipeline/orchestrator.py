@@ -6,41 +6,51 @@ from ..alignment.interfaces import align_gap
 from ..reconstruction.interfaces import reconstruct_alignment
 from ..mutations.interfaces import detect_mutations, get_compound_events
 from ..models.result import FinalResult
+from .timing import track_pipeline_resources, StageTimer
+
 
 def run_pipeline(reference: str, query: str, config: AnchorAlignConfig = None) -> FinalResult:
     if config is None:
         config = AnchorAlignConfig()
-    
-    # 1. Preprocessing
-    ref_norm = preprocess_sequence(reference)
-    query_norm = preprocess_sequence(query)
-    
-    # 2. Anchor Engine
-    anchors = find_anchors(ref_norm, query_norm, config)
-    
-    # 3. Gap Engine
-    gaps = extract_gaps(ref_norm, query_norm, anchors, config)
-    
-    # 4. Adaptive Alignment
-    aligned_gaps = []
-    for gap in gaps:
-        aligned_result = align_gap(gap, ref_norm, query_norm, config)
-        aligned_gaps.append(aligned_result)
-    
-    # 5. Reconstruction
-    final_alignment = reconstruct_alignment(ref_norm, query_norm, anchors, aligned_gaps)
-    
-    # 6. Mutation Engine
-    mutations = detect_mutations(final_alignment)
-    
-    # 7. Compound Clustering
-    compound_events = get_compound_events(mutations, config)
-    
+
+    with track_pipeline_resources() as (timings, memory_stats):
+        # 1. Preprocessing
+        with StageTimer("preprocessing", timings):
+            ref_norm = preprocess_sequence(reference)
+            query_norm = preprocess_sequence(query)
+
+        # 2. Anchor Engine
+        with StageTimer("anchor_discovery", timings):
+            anchors = find_anchors(ref_norm, query_norm, config)
+
+        # 3. Gap Engine
+        with StageTimer("gap_extraction", timings):
+            gaps = extract_gaps(ref_norm, query_norm, anchors, config)
+
+        # 4. Adaptive Alignment
+        with StageTimer("gap_alignment", timings):
+            aligned_gaps = []
+            for gap in gaps:
+                aligned_result = align_gap(gap, ref_norm, query_norm, config)
+                aligned_gaps.append(aligned_result)
+
+        # 5. Reconstruction
+        with StageTimer("reconstruction", timings):
+            final_alignment = reconstruct_alignment(ref_norm, query_norm, anchors, aligned_gaps)
+
+        # 6. Mutation Engine
+        with StageTimer("mutation_detection", timings):
+            mutations = detect_mutations(final_alignment)
+
+        # 7. Compound Clustering
+        with StageTimer("compound_clustering", timings):
+            compound_events = get_compound_events(mutations, config)
+
     # Check boundary warnings
     warnings = []
     if final_alignment.boundary_touched:
         warnings.append("Banded DP boundary_touched=True. The optimal alignment might have drifted outside the band.")
-    
+
     # 8. Final Result Construction
     return FinalResult(
         reference_length=len(ref_norm),
@@ -51,6 +61,9 @@ def run_pipeline(reference: str, query: str, config: AnchorAlignConfig = None) -
         mutations=mutations,
         compound_events=compound_events,
         warnings=warnings,
+        timings=timings,
+        memory_peak_kb=memory_stats.get("peak_kb", 0.0),
+        memory_current_kb=memory_stats.get("current_kb", 0.0),
         configuration=config,
-        final_alignment=final_alignment
+        final_alignment=final_alignment,
     )

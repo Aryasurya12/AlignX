@@ -6,6 +6,7 @@ from .alignment import AlignmentResult
 from .mutation import Mutation
 from ..config import AnchorAlignConfig
 
+
 @dataclass
 class FinalResult:
     reference_length: int
@@ -18,5 +19,7 @@ class FinalResult:
     scores: Dict[str, float] = field(default_factory=dict)
     warnings: List[str] = field(default_factory=list)
     timings: Dict[str, float] = field(default_factory=dict)
+    memory_peak_kb: float = 0.0
+    memory_current_kb: float = 0.0
     configuration: Optional[AnchorAlignConfig] = None
     final_alignment: Optional[AlignmentResult] = None
