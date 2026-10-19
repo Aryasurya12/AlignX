@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from typing import Optional, Dict, Any
+
 
 @dataclass
 class AlignmentResult:
@@ -8,4 +10,5 @@ class AlignmentResult:
     strategy: str
     band_width: int
     boundary_touched: bool
-    decision_metadata: dict = None
+    decision_metadata: Optional[Dict[str, Any]] = None
+    cells_evaluated: int = 0

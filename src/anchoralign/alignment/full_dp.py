@@ -4,9 +4,11 @@ from ..config import AnchorAlignConfig
 def full_dp_align(reference_gap: str, query_gap: str, config: AnchorAlignConfig) -> AlignmentResult:
     """
     Full Global Dynamic Programming alignment (Needleman-Wunsch).
+    Counts total DP cells evaluated: (r + 1) * (q + 1).
     """
     r = len(reference_gap)
     q = len(query_gap)
+    cells_evaluated = (r + 1) * (q + 1)
     
     # DP matrix
     # dp[i][j] stores the score of aligning reference[:i] and query[:j]
@@ -62,5 +64,6 @@ def full_dp_align(reference_gap: str, query_gap: str, config: AnchorAlignConfig)
         score=dp[r][q],
         strategy="full_dp",
         band_width=0,
-        boundary_touched=False
+        boundary_touched=False,
+        cells_evaluated=cells_evaluated
     )

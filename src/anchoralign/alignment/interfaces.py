@@ -9,6 +9,7 @@ def align_gap(gap: Gap, reference: str, query: str, config: AnchorAlignConfig) -
     """
     Adaptive Alignment Engine entry point.
     Extracts the actual sequence slices for the gap and runs the selected strategy.
+    Tracks total DP cells evaluated across any retries or fallbacks.
     """
     ref_slice = reference[gap.reference_start:gap.reference_end]
     query_slice = query[gap.query_start:gap.query_end]
@@ -31,6 +32,7 @@ def align_gap(gap: Gap, reference: str, query: str, config: AnchorAlignConfig) -
         }
         
         res = banded_dp_align(ref_slice, query_slice, config, band_width)
+        total_cells = res.cells_evaluated
         
         if config.adaptive_band_enabled and is_adaptive:
             retries = 0
@@ -38,6 +40,7 @@ def align_gap(gap: Gap, reference: str, query: str, config: AnchorAlignConfig) -
                 retries += 1
                 band_width *= config.band_growth_factor
                 res = banded_dp_align(ref_slice, query_slice, config, band_width)
+                total_cells += res.cells_evaluated
             
             metadata["retry_count"] = retries
             metadata["final_band_width"] = band_width
@@ -47,16 +50,19 @@ def align_gap(gap: Gap, reference: str, query: str, config: AnchorAlignConfig) -
                 # Fallback to Full DP
                 metadata["fallback_used"] = True
                 res = full_dp_align(ref_slice, query_slice, config)
+                total_cells += res.cells_evaluated
                 res.strategy = "full_dp_fallback"
         else:
             if len(res.aligned_reference) == 0 and (len(ref_slice) > 0 or len(query_slice) > 0):
                 # Legacy fallback
                 metadata["fallback_used"] = True
                 res = full_dp_align(ref_slice, query_slice, config)
+                total_cells += res.cells_evaluated
                 res.boundary_touched = True
                 res.strategy = "full_dp_fallback"
                 
         res.decision_metadata = metadata
+        res.cells_evaluated = total_cells
         return res
     else:
         res = full_dp_align(ref_slice, query_slice, config)
