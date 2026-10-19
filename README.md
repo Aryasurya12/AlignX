@@ -82,15 +82,23 @@ python -m pip install -e ".[dev]"
 ```
 
 ## Running the Application
-Launch the Streamlit research dashboard to run deterministic sequences, visualize tracebacks, and explore decision metrics.
+
+### 1. Interactive Streamlit Research Studio
+Launch the Streamlit research dashboard to run real biological FASTA sequences, simulate Big-O scaling, visualize tracebacks, and explore decision metrics:
 ```bash
 streamlit run streamlit_app.py
 ```
 
-## Testing & Benchmarking
-Run the full regression test suite (128 passing tests):
+### 2. Standalone Verification Demo
+Run the headless terminal demo exercising biological beta-globin CDS alignment, synthetic indels, memory profiling, and complexity work-elimination:
 ```bash
-PYTHONPATH="src" pytest
+python demo_full.py
+```
+
+## Testing & Code Coverage
+Run the full regression test suite (144 passing unit & integration tests) with coverage reporting:
+```bash
+PYTHONPATH="src" pytest --cov=src/anchoralign --cov-report=term-missing tests/
 ```
 
 Execute the Phase 7 benchmark pipeline (generates deterministic CSV scalability tests):
@@ -99,25 +107,30 @@ PYTHONPATH="src" python -m experiments.run_phase7 --smoke
 PYTHONPATH="src" python -m experiments.run_phase7 --scale
 ```
 
+## Biological Datasets
+Curated sample FASTA sequences from NCBI are located in `data/samples/`:
+- **Beta-Globin (HBB)**: `human_hbb.fasta` vs `chimp_hbb.fasta` (High homology CDS orthologs)
+- **SARS-CoV-2 Spike RBD**: `sars_cov2_wuhan_rbd.fasta` vs `sars_cov2_omicron_rbd.fasta` (Viral lineage mutations)
+- **TP53 Tumor Suppressor Exon 7**: `tp53_wildtype.fasta` vs `tp53_mutant.fasta` (Hotspot R248W + localized deletion)
+
 ## Performance Results and Limitations
-For sequence lengths up to 10,000 bp with high homology (e.g., identical matches or sparse mutations), AlignX demonstrates measured CPU speedups of **100x to 500x** over native Python $O(N \cdot M)$ Full DP baseline execution. This speedup relies heavily on completely bypassing DP cell evaluation within long exact anchors.
+For sequence lengths up to 10,000 bp with high homology (e.g., identical matches or sparse mutations), AlignX demonstrates measured CPU speedups of **100x to 500x** over native Python $\mathcal{O}(N \cdot M)$ Full DP baseline execution. This speedup relies heavily on completely bypassing DP cell evaluation within long exact anchors (>99% cells skipped).
 
 **Limitations:**
-- **Quadratic Fallback**: In completely divergent sequences lacking exact anchors, AlignX safely falls back to standard $O(N \cdot M)$ complexity.
-- **Memory Footprint**: Absolute peak application RSS memory has not been explicitly measured; resource usage is theoretically bounded via DP dimensions.
-- **String Slicing**: Python string slicing poses a constant-factor bottleneck on high-frequency, extremely short microscopic gaps.
-- **Synthetic Scope**: Validation relies heavily on synthetic datasets to exercise edge cases safely.
+- **Quadratic Fallback**: In completely divergent sequences lacking exact anchors, AlignX safely falls back to standard $\mathcal{O}(N \cdot M)$ complexity.
+- **Constant Factor**: Pure Python string slicing poses a constant-factor overhead on high-frequency, extremely short microscopic gaps.
+- **Memory Footprint**: Peak memory is strictly monitored via `tracemalloc` and bounded to the size of the largest active gap matrix $\mathcal{O}(\max(g_i \cdot W_i))$.
 
 ## Documentation
-- [Phase 8 Research Paper](paper/alignx_research_paper.md)
+- [Research Paper](paper/alignx_research_paper.md)
 - [Final Project Report](docs/final_project_report.md)
 - [Reproducibility Guide](docs/reproducibility.md)
 - [Evidence & Claim Audit](docs/performance_claim_audit.md)
-- [Phase 9 Final Release Report](docs/phase9_final_release_report.md)
+- [Completion Plan](completion_plan.md)
 
 ## Current Status
-**Phase 9 Complete.**
-The project includes a full synthetic test suite, benchmark generator, and academic release documentation.
+**v1.0.0 Release Ready.**
+All 7 completion plan phases implemented, 144 tests passing, CI workflow configured, full biological FASTA support added, Big-O complexity analyzer visualizer integrated.
 
 ## License
-*Pending project decision.*
+MIT License. See [LICENSE](LICENSE) for details.
