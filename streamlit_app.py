@@ -1,7 +1,17 @@
 import streamlit as st
 from anchoralign.ui.theme import apply_theme
 from anchoralign.ui.components import initialize_session
-from anchoralign.ui.pages import overview, alignment, baseline, explorer, mutations, insights, benchmarks, export
+from anchoralign.ui.pages import (
+    overview,
+    alignment,
+    baseline,
+    complexity,
+    explorer,
+    mutations,
+    insights,
+    benchmarks,
+    export,
+)
 
 st.set_page_config(page_title="AlignX", layout="wide")
 
@@ -14,6 +24,7 @@ with st.sidebar:
         "Overview",
         "Sequence Alignment",
         "Baseline Comparison",
+        "Algorithm Complexity",
         "Alignment Explorer",
         "Mutation Analysis",
         "Algorithm Insights",
@@ -31,6 +42,8 @@ elif selection == "Sequence Alignment":
     alignment.render()
 elif selection == "Baseline Comparison":
     baseline.render()
+elif selection == "Algorithm Complexity":
+    complexity.render()
 elif selection == "Alignment Explorer":
     explorer.render()
 elif selection == "Mutation Analysis":
