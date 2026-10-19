@@ -2,7 +2,19 @@ import streamlit as st
 import os
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+
+def _find_project_root() -> Path:
+    """Walk up from this file to find the repo root (contains pyproject.toml)."""
+    current = Path(__file__).resolve().parent
+    for _ in range(10):
+        if (current / "pyproject.toml").exists():
+            return current
+        current = current.parent
+    # Fallback: assume 4 levels up from src/anchoralign/ui/components.py
+    return Path(__file__).resolve().parents[3]
+
+
+PROJECT_ROOT = _find_project_root()
 
 def render_card(title, description, icon=""):
     st.markdown(f"""
