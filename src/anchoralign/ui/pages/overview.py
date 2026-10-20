@@ -26,17 +26,17 @@ def render():
     st.markdown("""
     ```mermaid
     graph LR
-        A[Input DNA FASTA] --> B[Exact Anchoring: KMP / Rabin-Karp]
-        B --> C[Monotonic Greedy Chain]
-        C --> D[Adaptive Gap Selector]
-        D -->|Safe Band| E[Banded DP O(N×W)]
-        D -->|Divergent| F[Full DP Fallback]
-        E -->|Boundary Collision| G{Retry < Max?}
-        G -->|Yes: Expand 2W| E
+        A["Input DNA FASTA"] --> B["Exact Anchoring: KMP / Rabin-Karp"]
+        B --> C["Monotonic Greedy Chain"]
+        C --> D["Adaptive Gap Selector"]
+        D -->|Safe Band| E["Banded DP O(N x W)"]
+        D -->|Divergent| F["Full DP Fallback"]
+        E -->|Boundary Hit| G{"Retry?"}
+        G -->|Yes - Expand 2W| E
         G -->|No| F
-        E --> H[Round-Trip Reconstruction]
+        E --> H["Round-Trip Reconstruction"]
         F --> H
-        H --> I[Structural Mutation Engine]
+        H --> I["Structural Mutation Engine"]
     ```
     """)
 
