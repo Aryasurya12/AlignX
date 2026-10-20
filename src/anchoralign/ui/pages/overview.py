@@ -7,9 +7,9 @@ def render():
     
     st.markdown("### Welcome to AlignX Research Studio")
     st.markdown(
-        "AlignX is an **Analysis of Algorithms (AoA)** capstone project demonstrating how linear-time "
-        "divide-and-conquer string algorithms (KMP, Rabin-Karp) can safely decompose sequence alignment, "
-        "collapsing quadratic $\mathcal{O}(N \cdot M)$ dynamic programming down to near-linear $\mathcal{O}(N)$."
+        r"AlignX is an **Analysis of Algorithms (AoA)** capstone project demonstrating how linear-time "
+        r"divide-and-conquer string algorithms (KMP, Rabin-Karp) can safely decompose sequence alignment, "
+        r"collapsing quadratic $\mathcal{O}(N \cdot M)$ dynamic programming down to near-linear $\mathcal{O}(N)$."
     )
 
     # Project Stats Highlights

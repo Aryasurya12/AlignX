@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+# Ensure src/ is on sys.path regardless of how streamlit is launched
+REPO_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
 import streamlit as st
 from anchoralign.ui.theme import apply_theme
 from anchoralign.ui.components import initialize_session

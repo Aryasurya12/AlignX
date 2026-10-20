@@ -1,55 +1,151 @@
 Metadata-Version: 2.4
 Name: anchoralign
-Version: 0.1.0
+Version: 1.0.0
 Summary: Adaptive Anchor-Guided DNA Sequence Alignment
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: streamlit>=1.28.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: matplotlib>=3.7.0
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0; extra == "dev"
+Dynamic: license-file
 
-# AnchorAlign
+# AlignX
 
-Adaptive Anchor-Guided DNA Sequence Alignment
+[![CI Test Suite](https://github.com/Aryasurya12/AlignX/actions/workflows/test.yml/badge.svg)](https://github.com/Aryasurya12/AlignX/actions)
+[![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen.svg)](https://github.com/Aryasurya12/AlignX)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Adaptive Anchor-Guided DNA Sequence Alignment**
+
+AlignX is a modular DNA sequence alignment framework that bridges the gap between fast heuristic approximations and strict mathematical guarantees. By decomposing sequences using exact matching anchors and adaptively sizing dynamic programming (DP) bounds for the remaining gaps, AlignX significantly accelerates alignment on high-homology sequences without sacrificing the mathematical optimality guaranteed by classical Needleman-Wunsch.
 
 ## Problem Statement
-Traditional sequence alignment algorithms like Full Dynamic Programming (DP) are computationally expensive and do not scale well for long DNA sequences with high similarity.
+Traditional sequence alignment algorithms like Full Dynamic Programming (DP) guarantee exact optimal alignments but scale quadratically in time and memory $O(N \cdot M)$. For long, highly similar DNA sequences, this evaluates millions of fundamentally unreachable cells.
 
-## Core Idea
-Identify long exact matching regions called ANCHORS and perform expensive dynamic-programming alignment only inside the remaining GAPS.
+## Architecture
+```mermaid
+graph TD
+    A[Reference & Query DNA] --> B[Preprocessing & Validation]
+    B --> C[Anchor Engine: KMP / Rabin-Karp]
+    C --> D[Anchor Resolution & Filtering]
+    D --> E[Gap Extraction]
 
-## Planned Architecture
-Reference + Query
-        ↓
-Preprocessing
-        ↓
-Anchor Engine
-        ↓
-Ordered Anchors
-        ↓
-Gap Engine
-        ↓
-Adaptive Alignment
-        ↓
-Reconstruction
-        ↓
-Mutation Engine
-        ↓
-Evaluation
-        ↓
-Visualization
+    E --> F[Adaptive Selector]
+
+    F -->|Band Estimated| G[Banded DP]
+    F -->|Divergent| H[Full DP]
+
+    G --> I{Boundary Touched?}
+    I -->|Yes| J{Retries < Max?}
+    J -->|Yes| K[Widen Band & Retry]
+    K --> G
+    J -->|No| H
+
+    I -->|No| L[Valid Alignment]
+    H --> L
+
+    L --> M[Alignment Reconstruction]
+    M --> N[Mutation Detection & Clustering]
+    N --> O[FinalResult Payload]
+```
+
+## Key Capabilities
+- **Anchor Engine**: Discover linear exact matches via Knuth-Morris-Pratt (KMP) or Rabin-Karp and resolve overlapping constraints monotonically.
+- **Adaptive Banding**: Scale DP diagonal bands dynamically based on local gap insertion/deletion length disparity.
+- **Boundary-Aware Retries**: If the traceback path approaches the computed band edges, the gap is automatically widened and re-run.
+- **Full DP Fallback**: If the band safety is violated repeatedly, the gap degrades safely to exact Full DP.
+- **Streamlit Research Dashboard**: A visual interface to inspect anchors, gaps, structural variant mutations, and algorithmic selector traces.
+
+## Analysis of Algorithms (AoA) Focus
+
+AlignX was engineered specifically to demonstrate foundational algorithm design paradigms applied to computational genomics:
+
+### 1. Asymptotic Complexity Comparison
+
+| Algorithm Paradigm | Time Complexity | Space Complexity | Optimality Guarantee |
+|:---|:---:|:---:|:---:|
+| **Needleman-Wunsch (Full DP)** | $\mathcal{O}(N \cdot M)$ | $\mathcal{O}(N \cdot M)$ | Strict Optimal |
+| **Global Banded DP (fixed $W$)** | $\mathcal{O}(N \cdot W)$ | $\mathcal{O}(N \cdot W)$ | Heuristic (clips indels) |
+| **AlignX (Decomposed, Homologous)** | $\mathcal{O}(N + \sum g_i W_i) \to \mathcal{O}(N)$ | $\mathcal{O}(\max(g_i W_i))$ | Strict Optimal (Fallback) |
+| **AlignX (Worst-Case Adversarial)** | $\mathcal{O}(N \cdot M)$ | $\mathcal{O}(N \cdot M)$ | Strict Optimal |
+
+### 2. Algorithmic Concepts Demonstrated
+- **Divide and Conquer**: Sequence partitioning into $K$ independent subproblems isolated by identical invariant anchors.
+- **Exact String Matching in Linear Time**:
+  - **Knuth-Morris-Pratt (KMP)**: Failure function ($\pi$-table) preprocessing in $\mathcal{O}(L_{\min})$ and linear $\mathcal{O}(N)$ scanning.
+  - **Rabin-Karp**: Rolling polynomial hash with modular arithmetic in $\mathcal{O}(N + M)$ average time.
+- **Greedy Interval Scheduling**: Strict monotonic anchor chain resolution $R_k < R_{k+1}$ and $Q_k < Q_{k+1}$ in $\mathcal{O}(K \log K)$ time.
+- **Adaptive Dynamic Programming**: Dynamic bandwidth estimation $W_i = |R_{\text{len}} - Q_{\text{len}}| + \text{margin} + \text{drift}$ with exponential expansion on boundary collision.
+- **Round-Trip Invariants**: Sequence reconstruction proofs asserting zero hallucination: $\text{strip\_gaps}(\text{aligned}) \equiv \text{original}$.
 
 ## Technology Stack
-- Python 3.11+
-- pytest
+- **Language**: Python 3.11+
+- **Testing**: `pytest`
+- **UI/Visualization**: `streamlit`, `pandas`, `matplotlib`
 
-## Current Development Status
-**Phase 1 — Anchor Engine**
-This phase implements exact string matching with KMP and Rabin-Karp, generates candidate anchors, and applies merging and deterministic conflict resolution to produce valid anchor chains.
+## Installation
+Ensure you have Python 3.11 or later installed.
+```bash
+git clone https://github.com/Aryasurya12/AlignX.git
+cd AlignX
+python -m pip install -e ".[dev]"
+```
 
-Later phases will implement:
-- gap analysis
-- Banded DP
-- Full DP
-- mutation detection
-- benchmarking
-- visualization
+## Running the Application
+
+### 1. Interactive Streamlit Research Studio
+Launch the Streamlit research dashboard to run real biological FASTA sequences, simulate Big-O scaling, visualize tracebacks, and explore decision metrics:
+```bash
+streamlit run streamlit_app.py
+```
+
+### 2. Standalone Verification Demo
+Run the headless terminal demo exercising biological beta-globin CDS alignment, synthetic indels, memory profiling, and complexity work-elimination:
+```bash
+python demo_full.py
+```
+
+## Testing & Code Coverage
+Run the full regression test suite (144 passing unit & integration tests) with coverage reporting:
+```bash
+PYTHONPATH="src" pytest --cov=src/anchoralign --cov-report=term-missing tests/
+```
+
+Execute the Phase 7 benchmark pipeline (generates deterministic CSV scalability tests):
+```bash
+PYTHONPATH="src" python -m experiments.run_phase7 --smoke
+PYTHONPATH="src" python -m experiments.run_phase7 --scale
+```
+
+## Biological Datasets
+Curated sample FASTA sequences from NCBI are located in `data/samples/`:
+- **Beta-Globin (HBB)**: `human_hbb.fasta` vs `chimp_hbb.fasta` (High homology CDS orthologs)
+- **SARS-CoV-2 Spike RBD**: `sars_cov2_wuhan_rbd.fasta` vs `sars_cov2_omicron_rbd.fasta` (Viral lineage mutations)
+- **TP53 Tumor Suppressor Exon 7**: `tp53_wildtype.fasta` vs `tp53_mutant.fasta` (Hotspot R248W + localized deletion)
+
+## Performance Results and Limitations
+For sequence lengths up to 10,000 bp with high homology (e.g., identical matches or sparse mutations), AlignX demonstrates measured CPU speedups of **100x to 500x** over native Python $\mathcal{O}(N \cdot M)$ Full DP baseline execution. This speedup relies heavily on completely bypassing DP cell evaluation within long exact anchors (>99% cells skipped).
+
+**Limitations:**
+- **Quadratic Fallback**: In completely divergent sequences lacking exact anchors, AlignX safely falls back to standard $\mathcal{O}(N \cdot M)$ complexity.
+- **Constant Factor**: Pure Python string slicing poses a constant-factor overhead on high-frequency, extremely short microscopic gaps.
+- **Memory Footprint**: Peak memory is strictly monitored via `tracemalloc` and bounded to the size of the largest active gap matrix $\mathcal{O}(\max(g_i \cdot W_i))$.
+
+## Documentation
+- [Research Paper](paper/alignx_research_paper.md)
+- [Final Project Report](docs/final_project_report.md)
+- [Reproducibility Guide](docs/reproducibility.md)
+- [Evidence & Claim Audit](docs/performance_claim_audit.md)
+- [Completion Plan](completion_plan.md)
+
+## Current Status
+**v1.0.0 Release Ready.**
+All 7 completion plan phases implemented, 144 tests passing, CI workflow configured, full biological FASTA support added, Big-O complexity analyzer visualizer integrated.
+
+## License
+MIT License. See [LICENSE](LICENSE) for details.
