@@ -18,7 +18,7 @@ def render():
             "Ref Seq": m.reference_sequence,
             "Qry Seq": m.query_sequence
         } for m in res.mutations])
-        st.dataframe(df_mut, use_container_width=True)
+        st.dataframe(df_mut, width='stretch')
     else:
         st.write("No mutations detected.")
 
@@ -29,6 +29,6 @@ def render():
             "Sub-mutations": c["mutation_count"],
             "Ref Range": f"{c['start_position']}-{c['end_position']}"
         } for c in res.compound_events])
-        st.dataframe(df_comp, use_container_width=True)
+        st.dataframe(df_comp, width='stretch')
     else:
         st.write("No compound events detected.")

@@ -40,7 +40,7 @@ def render():
             else:
                 df_filtered = df_p7
 
-            st.dataframe(df_filtered, use_container_width=True)
+            st.dataframe(df_filtered, width='stretch')
 
             c1, c2, c3 = st.columns(3)
             if 'correctness' in df_filtered.columns:

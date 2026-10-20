@@ -129,7 +129,7 @@ def render():
                         "Full DP Equivalent": g_full,
                         "Cells Saved": saved,
                     })
-                st.dataframe(pd.DataFrame(gap_data), use_container_width=True)
+                st.dataframe(pd.DataFrame(gap_data), width='stretch')
 
     else:
         st.info("Run an alignment in **Sequence Alignment** to see empirical cell savings for your sequence!")
@@ -197,4 +197,4 @@ def render():
     plt.close(fig)
 
     with st.expander("View Simulated Scaling Data Table"):
-        st.dataframe(df_curves, use_container_width=True)
+        st.dataframe(df_curves, width='stretch')

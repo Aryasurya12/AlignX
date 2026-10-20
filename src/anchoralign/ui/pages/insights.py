@@ -37,7 +37,7 @@ def render():
                     }
                     for k, v in stage_items
                 ])
-                st.dataframe(stage_df, use_container_width=True)
+                st.dataframe(stage_df, width='stretch')
 
             with t_col2:
                 # Horizontal bar chart for stage timings

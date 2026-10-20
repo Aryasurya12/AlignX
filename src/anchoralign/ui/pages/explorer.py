@@ -46,7 +46,7 @@ def render():
                 "Qry Start": a.query_start, "Qry End": a.query_end,
                 "Length": a.length, "Algo": a.source_algorithm
             } for a in res.anchors])
-            st.dataframe(df_anchors, use_container_width=True)
+            st.dataframe(df_anchors, width='stretch')
         else:
             st.write("No anchors found.")
 
@@ -59,6 +59,6 @@ def render():
                 "Qry Length": g.query_end - g.query_start,
                 "Len Diff": abs((g.reference_end - g.reference_start) - (g.query_end - g.query_start))
             } for g in res.gaps])
-            st.dataframe(df_gaps, use_container_width=True)
+            st.dataframe(df_gaps, width='stretch')
         else:
             st.write("No gaps extracted (sequences are fully anchored).")
